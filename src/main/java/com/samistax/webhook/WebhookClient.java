@@ -26,45 +26,21 @@ public class WebhookClient {
     public static void main(String[] args) {
         String webhookRegistrationUrl = "http://localhost:8888/subscribe";
         String webhookListenerURL = "http://localhost:8888/myHookListener"; // TEST URL to check callbacks work
-        String functionTriggerURL = "https://pulsar-aws-eucentral1.api.streaming.datastax.com/admin/v3/functions/edemo/default/event-processor/trigger";
         String userName = "user";
         String userPwd = "pass";
-        String msgBody ="";
-        boolean useFunctionTriggerURL = false;
-        if ( args.length > 0  ) {
-            // Overwrite default test callback URL with command line arg
-            webhookListenerURL = args[0];
-        }
-        if ( args.length > 1 && args[1].equalsIgnoreCase("function")) {
-            useFunctionTriggerURL = true;
-            webhookListenerURL = functionTriggerURL;
-        }
-        HttpRequest request = null;
 
         HttpClient client = HttpClient.newHttpClient();
-        if ( useFunctionTriggerURL) {
-            var authenticationHeader = "Bearer " + args[2];
-            try {
-                request = HttpRequest.newBuilder()
-                        .uri(URI.create(webhookRegistrationUrl))
-                        .header(HttpHeaders.CONTENT_TYPE, "multipart/form-data")
-                        .header(HttpHeaders.AUTHORIZATION, authenticationHeader)
-                        .POST(HttpRequest.BodyPublishers.ofString(webhookListenerURL))
-                        .build();
-            } catch (Exception ex ) {
-                System.out.println("Exception: " + ex);
-            }
-        } else {
-            var userNameAndPassword = Base64.getUrlEncoder().encodeToString((userName + ":" + userPwd).getBytes());
-            var authenticationHeader = "Basic " + userNameAndPassword;
 
-            request = HttpRequest.newBuilder()
-                    .uri(URI.create(webhookRegistrationUrl))
-                    .header("Content-Type", "application/json")
-                    .header(HttpHeaders.AUTHORIZATION, authenticationHeader)
-                    .POST(HttpRequest.BodyPublishers.ofString(webhookListenerURL))
-                    .build();
-        }
+        var userNameAndPassword = Base64.getUrlEncoder().encodeToString((userName + ":" + userPwd).getBytes());
+        var authenticationHeader = "Basic " + userNameAndPassword;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(webhookRegistrationUrl))
+                .header("Content-Type", "application/json")
+                .header(HttpHeaders.AUTHORIZATION, authenticationHeader)
+                .POST(HttpRequest.BodyPublishers.ofString(webhookListenerURL))
+                .build();
+
         // Send a request to subscribe to the webhook
 
         CompletableFuture<HttpResponse<String>> responseFuture = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
