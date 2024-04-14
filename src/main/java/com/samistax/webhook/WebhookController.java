@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 @EnableScheduling
 public class WebhookController {
 
-    //private static boolean USE_PULSAR_PRODUCER = false;
     private static int lastActivityId = 0;
 
     protected Logger logger = Logger.getLogger(WebhookController.class.getName());
@@ -165,7 +164,6 @@ public class WebhookController {
      */
     @RequestMapping("/events/byEventId/{id}")
     @GetMapping(produces = "application/json")
-    //public List<BaseEvent> byEventId(@PathVariable("id") String id) {
     public ResponseEntity<String> byEventId(@PathVariable("id") String id) {
         logger.info("events-service byEventId() invoked. TypeId = " + id);
 
@@ -182,7 +180,6 @@ public class WebhookController {
                 } catch (NumberFormatException nfe) {}
 
                 List<BaseEvent> filteredEvents = new ArrayList<>();
-                //List<ShipmentEvent> filteredEvents = events.stream().filter(e -> String.valueOf(e.getEventId()) == id).toList();
                 int finalFilterId = filterId;
                 events.forEach(event -> {
                     if (event.getEventId() == finalFilterId) {
