@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Local configurations containing secret keys and settings
+/local/config/application.properties
+
